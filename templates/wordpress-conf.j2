@@ -1,0 +1,33 @@
+<?php
+// ** Database settings ** //
+/** The name of the database for WordPress */
+define( 'DB_NAME', '{{ mysql_databases[0].name }}' );
+
+/** Database username */
+define( 'DB_USER', '{{ mysql_users[0].name }}' );
+
+/** Database password */
+define( 'DB_PASSWORD', '{{ mysql_users[0].password }}' );
+
+/** Database hostname */
+define( 'DB_HOST', '{{ mysql_users[0].host }}' );
+
+/** Database charset to use in creating database tables. */
+define( 'DB_CHARSET', '{{ mysql_databases[0].encoding }}' );
+
+/** The database collate type. Don't change this if in doubt. */
+define( 'DB_COLLATE', '{{ mysql_databases[0].collation }}' );
+
+/** WordPress database table prefix. */
+$table_prefix = 'wp_';
+
+/** WordPress debugging mode. */
+define( 'WP_DEBUG', false );
+
+/** Absolute path to the WordPress directory. */
+if ( ! defined( 'ABSPATH' ) ) {
+	define( 'ABSPATH', __DIR__ . '/' );
+}
+
+/** Sets up WordPress vars and included files. */
+require_once ABSPATH . 'wp-settings.php';

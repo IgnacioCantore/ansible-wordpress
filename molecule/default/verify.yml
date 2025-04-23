@@ -1,0 +1,29 @@
+---
+- name: Verificaciones del role
+  hosts: all
+  tasks:
+    - name: Chequear si NGINX está corriendo
+      ansible.builtin.command: pgrep nginx
+      register: nginx_status
+      ignore_errors: true
+      changed_when: false
+
+    - name: Verificar estado de NGINX
+      ansible.builtin.assert:
+        that:
+          - nginx_status.rc == 0
+        success_msg: "NGINX está corriendo"
+        fail_msg: "NGINX no está corriendo"
+
+    - name: Chequear si PHP-FPM está corriendo
+      ansible.builtin.command: pgrep php-fpm
+      register: php_fpm_status
+      ignore_errors: true
+      changed_when: false
+
+    - name: Verificar estado de PHP-FPM
+      ansible.builtin.assert:
+        that:
+          - php_fpm_status.rc == 0
+        success_msg: "PHP-FPM está corriendo"
+        fail_msg: "PHP-FPM no está corriendo"

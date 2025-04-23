@@ -1,0 +1,21 @@
+- name: Reiniciar NGINX
+  ansible.builtin.shell: |
+    if pgrep nginx; then
+      nginx -s reload
+    else
+      nginx
+    fi
+  args:
+    executable: /bin/bash
+  changed_when: false
+
+- name: Reiniciar PHP-FPM
+  ansible.builtin.shell: |
+    if pgrep php-fpm; then
+      kill -USR2 $(pgrep php-fpm)
+    else
+      php-fpm
+    fi
+  args:
+    executable: /bin/bash
+  changed_when: false

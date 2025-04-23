@@ -1,0 +1,33 @@
+---
+dependency:
+  name: galaxy
+
+driver:
+  name: docker
+
+platforms:
+  - name: molecule-debian
+    image: debian
+  - name: molecule-ubuntu
+    image: ubuntu
+  - name: molecule-rocky
+    image: rockylinux:9
+
+provisioner:
+  name: ansible
+  inventory:
+    group_vars:
+      all:
+        nginx_http_port: 8080
+        nginx_server_name: _
+        mysql_databases:
+          - name: wordpress_db
+            encoding: utf8
+            collation: utf8_general_ci
+        mysql_users:
+          - name: wordpress
+            host: localhost
+            password: password
+
+verifier:
+  name: ansible

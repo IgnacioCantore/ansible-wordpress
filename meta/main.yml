@@ -1,0 +1,22 @@
+galaxy_info:
+  role_name: wordpress
+  namespace: ignaciocantore
+  author: Ignacio Cantore
+  description: Instala WordPress, configurando todo lo necesario (excepto la base de datos)
+  company: Mikroways
+  license: MIT
+  min_ansible_version: "2.1"
+  platforms:
+    - name: Debian
+      versions:
+        - bookworm
+    - name: Ubuntu
+      versions:
+        - jammy
+    - name: EL
+      versions:
+        - "9"
+  galaxy_tags:
+    - wordpress
+
+dependencies: []

@@ -1,0 +1,78 @@
+- name: Cargar variables según el SO
+  ansible.builtin.include_vars:
+    file: "{{ ansible_os_family }}.yml"
+
+- name: Instalar NGINX y PHP
+  ansible.builtin.package:
+    name:
+      - nginx
+      - php-fpm
+      - "{{ php_mysql_package }}"
+      - unzip
+      - "{{ procps_package }}"
+    update_cache: true
+    state: present
+
+- name: Copiar configuración del sitio de NGINX
+  ansible.builtin.template:
+    src: nginx-site-conf.j2
+    dest: "{{ nginx_conf_dest }}"
+    mode: '0644'
+  notify: Reiniciar NGINX
+
+- name: Copiar pool de PHP-FPM
+  notify: Reiniciar PHP-FPM
+  block:
+    - name: Crear directorio para socket
+      ansible.builtin.file:
+        path: "{{ fastcgi_socket_dir }}"
+        state: directory
+        mode: '0755'
+
+    - name: Obtener versión de PHP instalada
+      ansible.builtin.shell: |
+        set -o pipefail
+        ls /etc/php/ | sort -r | head -n1
+      register: php_version
+      changed_when: false
+      when: ansible_os_family == 'Debian'
+      args:
+        executable: /bin/bash
+
+    - name: Crear link simbólico a directorio de pools
+      ansible.builtin.file:
+        src: "/etc/php/{{ php_version.stdout }}/fpm/pool.d"
+        dest: "{{ php_fpm_pool_dir }}"
+        state: link
+      when: ansible_os_family == 'Debian'
+
+    - name: Copiar pool
+      ansible.builtin.template:
+        src: php-fpm-pool.j2
+        dest: "{{ php_fpm_pool_dir }}/wordpress.conf"
+        mode: '0644'
+
+    - name: Crear link simbólico a binario de PHP-FPM
+      ansible.builtin.file:
+        src: "/usr/sbin/php-fpm{{ php_version.stdout }}"
+        dest: /usr/sbin/php-fpm
+        state: link
+      when: ansible_os_family == 'Debian'
+
+- name: Descargar Wordpress
+  ansible.builtin.get_url:
+    url: https://wordpress.org/latest.zip
+    dest: /tmp/wordpress.zip
+    mode: '0644'
+
+- name: Instalar Wordpress
+  ansible.builtin.unarchive:
+    src: /tmp/wordpress.zip
+    dest: /var/www/html
+    remote_src: true
+
+- name: Copiar configuración de Wordpress
+  ansible.builtin.template:
+    src: wordpress-conf.j2
+    dest: /var/www/html/wp-config.php
+    mode: '0644'

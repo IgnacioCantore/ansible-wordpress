@@ -1,0 +1,8 @@
+php_mysql_package: php-mysql
+procps_package: procps
+nginx_conf_dest: /etc/nginx/sites-available/default
+fastcgi_conf_file: snippets/fastcgi-php.conf
+fastcgi_socket_dir: /run/php
+fastcgi_socket_file: "{{ fastcgi_socket_dir }}/wordpress.sock"
+php_fpm_pool_dir: /etc/php-fpm.d
+php_fpm_pool_user: www-data
